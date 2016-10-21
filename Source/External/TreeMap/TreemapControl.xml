@@ -1,0 +1,1782 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TreemapControl</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.Research.CommunityTechnologies.ControlLib.ControlUtil">
+            <summary>
+            Control utility methods.
+            </summary>
+            
+            <remarks>
+            This class contains utility methods for dealing with Control-derived
+            objects.  All methods are static.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.ControlLib.ControlUtil.#ctor">
+            <summary>
+            Do not use this constructor.
+            </summary>
+            
+            <remarks>
+            Do not use this constructor.  All ControlUtil methods are static.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.ControlLib.ControlUtil.GetClientMousePosition(System.Windows.Forms.Control)">
+            <summary>
+            Gets the current mouse position in client coordinates.
+            </summary>
+            
+            <param name="oControl">
+            Control to use for the client coordinates.
+            </param>
+            
+            <returns>
+            Mouse position in client coordinates.
+            </returns>
+            
+            <remarks>
+            NOTE: The point returned by this method can be outside the control's
+            client area.  This can happen if the user is moving the mouse quickly.
+            The caller should check for this.
+            </remarks>
+        </member>
+        <member name="T:Microsoft.Research.CommunityTechnologies.Treemap.NodeEventArgs">
+            <summary>
+            Provides data for the NodeDoubleClick and NodeMouseHover events fired by
+            the <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.NodeEventArgs.#ctor(Microsoft.Research.CommunityTechnologies.Treemap.Node)">
+            <summary>
+            Initializes a new instance of the NodeEventArgs class.
+            </summary>
+            
+            <param name="oNode">
+            Node object associated with the event.
+            </param>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.NodeEventArgs.AssertValid">
+            <summary>
+            Displays a message if the object is in an invalid state.
+            </summary>
+            
+            <remarks>
+            This is available in the debug build only.  It checks the object's
+            internal state and calls <see cref="M:System.Diagnostics.Debug.Assert(System.Boolean)"/> if it detects a
+            problem.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Research.CommunityTechnologies.Treemap.NodeEventArgs.Node">
+            <summary>
+            Gets the <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.Node"/>
+            object associated with the event.
+            </summary>
+            
+            <value>
+            The <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.Node"/>
+            object associated with the event.
+            </value>
+            
+            <seealso cref="T:Microsoft.Research.CommunityTechnologies.Treemap.Node"/>
+        </member>
+        <member name="T:Microsoft.Research.CommunityTechnologies.Treemap.NodeMouseEventArgs">
+            <summary>
+            Provides data for the MouseDown and MouseUp events fired by the <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.NodeMouseEventArgs.#ctor(System.Windows.Forms.MouseEventArgs,Microsoft.Research.CommunityTechnologies.Treemap.Node)">
+            <summary>
+            Initializes a new instance of the NodeMouseEventArgs class.
+            </summary>
+            
+            <param name="oMouseEventArgs">
+            Mouse event arguments.
+            </param>
+            
+            <param name="oNode">
+            Node object associated with the event.
+            </param>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.NodeMouseEventArgs.AssertValid">
+            <summary>
+            Displays a message if the object is in an invalid state.
+            </summary>
+            
+            <remarks>
+            This is available in the debug build only.  It checks the object's
+            internal state and calls <see cref="M:System.Diagnostics.Debug.Assert(System.Boolean)"/> if it detects a
+            problem.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Research.CommunityTechnologies.Treemap.NodeMouseEventArgs.Node">
+            <summary>
+            Gets the <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.Node"/>
+            object associated with the event.
+            </summary>
+            
+            <value>
+            The <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.Node"/>
+            object associated with the event.
+            </value>
+            
+            <seealso cref="T:Microsoft.Research.CommunityTechnologies.Treemap.Node"/>
+        </member>
+        <member name="T:Microsoft.Research.CommunityTechnologies.GraphicsLib.ToolTipTracker">
+            <summary>
+            ToolTipTracker class.
+            </summary>
+            
+            <remarks>
+            This is meant for use by a Control object that displays various objects
+            within its window and wants to show a tooltip for each object.  The ToolTip
+            class in the FCL makes it easy to show a single tooltip for an entire
+            control, but it does not support different tooltips for different parts of
+            the control's window.
+            
+            <para>
+            To use ToolTipTracker, call OnMouseMoveOverObject() from the control's
+            MouseMove event handler.  If the mouse is currently over an object that has
+            a tooltip associated with it, pass the object as the method's
+            oObjectToTrack parameter.  Otherwise, pass null.  Also, call
+            OnMouseMoveOverObject() with a null parameter from the control's MouseLeave
+            event handler.
+            </para>
+            
+            <para>
+            If the mouse remains over an object for a period of ShowDelayMs
+            milliseconds, ToolTipTracker fires a ShowToolTip event.  The event
+            arguments include the object being tracked.  Note that ToolTipTracker does
+            not show the tooltip; that's up to the application.  
+            </para>
+            
+            <para>
+            A HideToolTip event is fired when the tooltip should be hidden.  This
+            occurs HideDelayMs after the ShowToolTip event fires if the mouse remains
+            over the object, or immediately if OnMouseMoveOverObject(null) is called.
+            </para>
+            
+            <para>
+            If the mouse is moved to another object within ReshowDelayMs milliseconds,
+            another ShowToolTip event is fired.  Otherwise, the waiting period reverts
+            to ShowDelayMs.
+            </para>
+            
+            <para>
+            Call Reset() to reset ToolTipTracker to its initial state.  This forces
+            a HideToolTip event if a tooltip is showing.
+            </para>
+            
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.GraphicsLib.ToolTipTracker.#ctor">
+            <summary>
+            ToolTipTracker constructor.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.GraphicsLib.ToolTipTracker.OnMouseMoveOverObject(System.Object)">
+            <summary>
+            OnMouseMoveOverObject method.
+            </summary>
+            
+            <param name="oObjectToTrack">
+            Object.  Object to track, or null to stop tracking.
+            </param>
+            
+            <remarks>
+            Call this with an Object parameter when the mouse moves over an object
+            that should be tracked.  Call it with a null parameter when the mouse
+            moves over an area of the control where there is no object, and when
+            the mouse leaves the control.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.GraphicsLib.ToolTipTracker.Reset">
+            <summary>
+            Reset method.
+            </summary>
+            
+            <remarks>
+            Resets the object to its initial state.  This forces a HideToolTip
+            event if a tooltip is showing.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.GraphicsLib.ToolTipTracker.ValidateDelayProperty(System.Int32,System.String)">
+            <summary>
+            ValidateDelayProperty method.
+            </summary>
+            
+            <param name="iValue">
+            Int32.  Property value.
+            </param>
+            
+            <param name="sPropertyName">
+            String.  Name of the property being validated.  Sample: "ShowDelayMs".
+            </param>
+            
+            <remarks>
+            Validates one of the xxDelayMs properties.  Throws an exception if the
+            value is out of range.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.GraphicsLib.ToolTipTracker.ChangeState(Microsoft.Research.CommunityTechnologies.GraphicsLib.ToolTipTracker.State,System.Object)">
+            <summary>
+            ChangeState method.
+            </summary>
+            
+            <param name="iState">
+            State.  New object state.
+            </param>
+            
+            <param name="oObjectToTrack">
+            Object.  Object to track, or null to stop tracking.
+            </param>
+            
+            <remarks>
+            Changes the state of the object.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.GraphicsLib.ToolTipTracker.FireShowToolTipEvent(System.Object)">
+            <summary>
+            FireShowToolTipEvent method.
+            </summary>
+            
+            <param name="oObject">
+            Object.  Object to show a tooltip for.
+            </param>
+            
+            <remarks>
+            Fires the ShowToolTip event.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.GraphicsLib.ToolTipTracker.FireHideToolTipEvent(System.Object)">
+            <summary>
+            FireHideToolTipEvent method.
+            </summary>
+            
+            <param name="oObject">
+            Object.  Object to hide the tooltip for.
+            </param>
+            
+            <remarks>
+            Fires the HideToolTip event.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.GraphicsLib.ToolTipTracker.TimerTick(System.Object,System.EventArgs)">
+            <summary>
+            TimerTick method.
+            </summary>
+            
+            <param name="oSource">
+            Object.  Source of the event.
+            </param>
+            
+            <param name="oEventArgs">
+            Standard event arguments.
+            </param>
+            
+            <remarks>
+            Timer event handler.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.GraphicsLib.ToolTipTracker.AssertValid">
+            <summary>
+            AssertValid method.
+            </summary>
+            
+            <remarks>
+            Asserts if the object is in an invalid state.  Debug-only.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Research.CommunityTechnologies.GraphicsLib.ToolTipTracker.ShowDelayMs">
+            <summary>
+            ShowDelayMs property.
+            </summary>
+            
+            <value>
+            Int32.  Number of milliseconds to wait to fire the ShowToolTip event
+            after OnMouseMoveOverObject(oObjectToTrack) is first called.
+            </value>
+        </member>
+        <member name="P:Microsoft.Research.CommunityTechnologies.GraphicsLib.ToolTipTracker.HideDelayMs">
+            <summary>
+            HideDelayMs property.
+            </summary>
+            
+            <value>
+            Int32.  Number of milliseconds to wait to fire the HideToolTip event
+            after ShowToolTip is fired.
+            </value>
+        </member>
+        <member name="P:Microsoft.Research.CommunityTechnologies.GraphicsLib.ToolTipTracker.ReshowDelayMs">
+            <summary>
+            ReshowDelayMs property.
+            </summary>
+            
+            <value>
+            Int32.  Period after a HideToolTip event during which a ShowToolTip
+            event will be fired immediately if the mouse is moved over another
+            object.  If this period elapses without
+            OnMouseMoveOverObject(oObjectToTrack) being called, the waiting period
+            reverts to m_iShowDelayMs.
+            </value>
+        </member>
+        <member name="E:Microsoft.Research.CommunityTechnologies.GraphicsLib.ToolTipTracker.ShowToolTip">
+            <summary>
+            ShowToolTip event.
+            </summary>
+            
+            <remarks>
+            Fired when a tooltip window should be shown.
+            </remarks>
+        </member>
+        <member name="E:Microsoft.Research.CommunityTechnologies.GraphicsLib.ToolTipTracker.HideToolTip">
+            <summary>
+            HideToolTip event.
+            </summary>
+            
+            <remarks>
+            Fired when a tooltip window should be hidden.
+            </remarks>
+        </member>
+        <member name="T:Microsoft.Research.CommunityTechnologies.GraphicsLib.ToolTipTracker.ToolTipTrackerEvent">
+            <summary>
+            ToolTipTrackerEvent delegate.
+            </summary>
+            
+            <param name="oSource">
+            Object.  Source of the event.
+            </param>
+            
+            <param name="oToolTipTrackerEventArgs">
+            ToolTipTrackerEventArgs.  Provides information about the object for
+            which a tooltip window should be shown or hidden.
+            </param>
+            
+            <remarks>
+            This delegate is used in all events fired by ToolTipTracker.
+            </remarks>
+        </member>
+        <member name="T:Microsoft.Research.CommunityTechnologies.GraphicsLib.ToolTipTrackerEventArgs">
+            <summary>
+            ToolTipTrackerEventArgs class.
+            </summary>
+            
+            <remarks>
+            Events fired by the ToolTipTracker object include a ToolTipTrackerEventArgs
+            object as one of the event arguments.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.GraphicsLib.ToolTipTrackerEventArgs.#ctor(System.Object)">
+            <summary>
+            ToolTipTrackerEventArgs constructor.
+            </summary>
+            
+            <param name="oObject">
+            Object.  Object for which a tooltip window should be shown or hidden.
+            </param>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.GraphicsLib.ToolTipTrackerEventArgs.AssertValid">
+            <summary>
+            AssertValid method.
+            </summary>
+            
+            <remarks>
+            Asserts if the object is in an invalid state.  Debug-only.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Research.CommunityTechnologies.GraphicsLib.ToolTipTrackerEventArgs.Object">
+            <summary>
+            Object property.
+            </summary>
+            
+            <value>
+            Object.  Returns the Object for which a tooltip window should be shown
+            or hidden.  Read-only.
+            </value>
+        </member>
+        <member name="T:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl">
+            <summary>
+            Treemap control.
+            </summary>
+            
+            <remarks>
+            
+            TreemapControl is one of two components that render a hierarchical data
+            set as a treemap, which is a set of nested rectangles.  The size of each
+            rectangle is determined by a property of each item in the data set, and the
+            rectangle's fill color is determined by another property.
+            
+            <para>
+            The following table summarizes the two treemap components.
+            </para>
+            
+            <list type="table">
+            
+            <listheader>
+            <term>Component</term>
+            <term>For Use In</term>
+            <term>Required Assemblies</term>
+            </listheader>
+            
+            <item>
+            <term><see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.TreemapGenerator"/></term>
+            <term>
+            Any application that wants to draw a treemap onto a <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.Bitmap"/>
+            or <see cref="T:System.Drawing.Graphics"/> object, or do custom drawing
+            </term>
+            <term>
+            TreemapGenerator.dll
+            </term>
+            </item>
+            
+            <item>
+            <term>TreemapControl</term>
+            <term>
+            Windows Forms applications
+            </term>
+            <term>
+            TreemapControl.dll, TreemapGenerator.dll
+            </term>
+            </item>
+            
+            </list>
+            
+            <para>
+            TreemapControl inherits from the standard <see cref="T:System.Windows.Forms.Panel"/> control,
+            which provides support for scrolling.  Internally, TreemapControl uses a
+            <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.TreemapGenerator"/> object to draw a treemap onto a
+            <see cref="T:System.Windows.Forms.PictureBox"/> control placed on the <see cref="T:System.Windows.Forms.Panel"/>.
+            </para>
+            
+            <para>
+            Note that an application using TreemapControl requires both the
+            TreemapControl.dll and TreemapGenerator.dll assemblies.
+            </para>
+            
+            <para>
+            Using the TreemapControl in an application involves two steps:
+            <list type="bullet">
+            
+            <item>
+            <description>Populate the <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.Nodes"/> collection
+            </description>
+            </item>
+            
+            <item>
+            <description>
+            Set properties that determine how the treemap is drawn
+            </description>
+            </item>
+            
+            </list>
+            </para>
+            
+            <para>
+            The <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.Nodes"/> property on TreemapControl
+            returns a collection of top-level <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.Node"/> objects.  Each
+            <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.Node"/> object in turn has a <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.Nodes"/> property
+            that returns a collection of child <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.Node"/> objects.  These
+            nested collections are directly analogous to the Nodes collections in the
+            standard .NET <see cref="T:System.Windows.Forms.TreeView"/> control.
+            </para>
+            
+            <para>
+            Each <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.Node"/> object has a <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.SizeMetric"/>
+            property that determines the size of the node's rectangle relative to other
+            nodes in the collection, a <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.ColorMetric"/> property that
+            determines the rectangle's fill color, and a <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.Text"/>
+            property that determines the text that is drawn in the center of the
+            rectangle.
+            </para>
+            
+            <para>
+            To improve performance, call <see cref="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.BeginUpdate"/> before populating
+            the treemap with nodes.  This prevents the chart from being immediately
+            updated.  Call <see cref="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.EndUpdate"/> when you are done.
+            </para>
+            
+            </remarks>
+            
+            <example>
+            Here is sample C# code that populates a TreemapControl
+            with two top-level nodes, each of which has two child nodes.  A few
+            properties that determine how the treemap is drawn are set.
+            
+            <code>
+            
+            protected void
+            InitializeTreemap()
+            {
+                // A TreemapControl has been placed on this form using the Visual
+                // Studio designer.
+            
+                // Improve performance by turning off updating while the chart is
+                // being populated.
+            
+                oTreemapControl.BeginUpdate();
+                PopulateTreemap(oTreemapControl);
+                oTreemapControl.EndUpdate();
+            
+                SetTreemapProperties(oTreemapControl);
+            }
+            
+            protected void
+            PopulateTreemap(TreemapControl oTreemapControl)
+            {
+                Nodes oNodes;
+                Node oNode;
+                Nodes oChildNodes;
+                Node oChildNode;
+            
+                // Get the collection of top-level nodes.
+            
+                oNodes = oTreemapControl.Nodes;
+            
+                // Add a top-level node to the collection.
+            
+                oNode = oNodes.Add("Top Level 1", 25F, 100F);
+            
+                // Add child nodes to the top-level node.
+            
+                oChildNodes = oNode.Nodes;
+                oChildNode = oChildNodes.Add("Child 1-1", 90F, 2.5F);
+                oChildNode = oChildNodes.Add("Child 1-2", 10F, -34.5F);
+            
+                // Add another top-level node.
+            
+                oNode = oNodes.Add("Top Level 2", 50F, -40.1F);
+            
+                // Add child nodes to the second top-level node.
+            
+                oChildNodes = oNode.Nodes;
+                oChildNode = oChildNodes.Add("Child 2-1", 61F, 0F);
+                oChildNode = oChildNodes.Add("Child 2-2", 100F, 200F);
+            
+                // (As an alternative to making multiple calls to the Nodes.Add
+                // method, the control can be populated via an XML string
+                // passed to the TreemapControl.NodesXml property.)
+            }
+            
+            protected void
+            SetTreemapProperties(TreemapControl oTreemapControl)
+            {
+                // All TreemapControl properties have default values that yield
+                // reasonable results in many cases.  We want to change the
+                // range of colors for this example.
+            
+                // Make Node.ColorMetric values of -200 to 200 map to a color
+                // range between blue and yellow.
+            
+                oTreemapControl.MinColorMetric = -200F;
+                oTreemapControl.MaxColorMetric = 200F;
+            
+                oTreemapControl.MinColor = Color.Blue;
+                oTreemapControl.MaxColor = Color.Yellow;
+            
+                // (Set other properties that determine border width, spacing
+                // between boxes, fonts, etc., if desired.)
+            }
+            
+            </code>
+            
+            </example>
+            
+            <seealso cref="T:Microsoft.Research.CommunityTechnologies.Treemap.TreemapGenerator"/>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.#ctor">
+            <summary>
+            Initializes a new instance of the TreemapControl class.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.GetNodeLevelsWithTextRange(System.Int32@,System.Int32@)">
+            <summary>
+            Gets the range of node levels for which text is shown.
+            </summary>
+            
+            <param name="minLevel">
+            Minimum node level.  Level 0 is the top level.
+            </param>
+            
+            <param name="maxLevel">
+            Maximum node level.  Level 0 is the top level.
+            </param>
+            
+            <remarks>
+            The range returned by this method is used only if <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.NodeLevelsWithText"/> is set to Range.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.SetNodeLevelsWithTextRange(System.Int32,System.Int32)">
+            <summary>
+            Sets the range of node levels for which text is displayed.
+            </summary>
+            
+            <param name="minLevel">
+            Minimum node level.  Level 0 is the top level.  Must be greater than or
+            equal to 0.
+            </param>
+            
+            <param name="maxLevel">
+            Maximum node level.  Level 0 is the top level.  Must be greater than or
+            equal to zero and greater than or equal to <paramref name="minLevel"/>.
+            </param>
+            
+            <remarks>
+            The range specified in this method is used only if <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.NodeLevelsWithText"/> is set to Range.  The default minimum and
+            maximum values are 0 and 999.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.GetFontSizeRange(System.Single@,System.Single@,System.Single@)">
+            <summary>
+            Gets the range of font sizes used for drawing node text.
+            </summary>
+            
+            <param name="minSizePt">
+            Minimum font size, in points.
+            </param>
+            
+            <param name="maxSizePt">
+            Maximum font size, in points.
+            </param>
+            
+            <param name="incrementPt">
+            Increment between font sizes, in points.
+            </param>
+            
+            <remarks>
+            The <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl"/> draws node text using a range of
+            font sizes.  For each node, the largest font in the range that won't
+            exceed the bounds of the node's rectangle is used.
+            
+            <para>
+            By default, the <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl"/> uses
+            <paramref name="minSizePt"/>=2, <paramref name="maxSizePt"/>=100,
+            and <paramref name="incrementPt"/>=2.
+            </para>
+            
+            </remarks>
+            
+            <example>
+            If <paramref name="minSizePt"/> is 2.0, <paramref name="maxSizePt"/>
+            is 10.0, and <paramref name="incrementPt"/> is 2.0, node text will be
+            drawn with one of the following font sizes: 2.0, 4.0, 6.0, 8.0, 10.0.
+            </example>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.SetFontSizeRange(System.Single,System.Single,System.Single)">
+            <summary>
+            Sets the range of font sizes used for drawing node text.
+            </summary>
+            
+            <param name="minSizePt">
+            Minimum font size, in points.
+            </param>
+            
+            <param name="maxSizePt">
+            Maximum font size, in points.
+            </param>
+            
+            <param name="incrementPt">
+            Increment between font sizes, in points.
+            </param>
+            
+            <remarks>
+            The <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl"/> draws node text using a range of font
+            sizes.  For each node, the largest font in the range that won't exceed
+            the bounds of the node's rectangle is used.
+            
+            <para>
+            By default, the <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl"/> uses
+            <paramref name="minSizePt"/>=2, <paramref name="maxSizePt"/>=100,
+            and <paramref name="incrementPt"/>=2.
+            </para>
+            
+            </remarks>
+            
+            <example>
+            If <paramref name="minSizePt"/> is 2.0, <paramref name="maxSizePt"/>
+            is 10.0, and <paramref name="incrementPt"/> is 2.0, node text will be
+            drawn with one of the following font sizes: 2.0, 4.0, 6.0, 8.0, 10.0.
+            </example>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.GetFontAlphaRange(System.Int32@,System.Int32@,System.Int32@)">
+            <summary>
+            Gets the range of transparency used for drawing node text.
+            </summary>
+            
+            <param name="minAlpha">
+            Alpha value used for the level with maximum transparency.
+            </param>
+            
+            <param name="maxAlpha">
+            Alpha value used for the level with minimum transparency.
+            </param>
+            
+            <param name="incrementPerLevel">
+            Amount that alpha is incremented from level to level.
+            </param>
+            
+            <remarks>
+            To improve text legibility, the <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl"/> varies
+            the transparency of node text.  The text for higher-level nodes is more
+            transparent than the text for lower-level nodes, so the lower-level
+            text shows through the higher-level text.
+            
+            <para>
+            Alpha values range from 0 (transparent) to 255 (opaque).
+            </para>
+            
+            <para>
+            By default, the <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl"/> uses
+            <paramref name="minAlpha"/>=105, <paramref name="maxAlpha"/>=255,
+            and <paramref name="incrementPerLevel"/>=50.
+            </para>
+            
+            </remarks>
+            
+            <example>
+            If <paramref name="minAlpha"/> is 55, <paramref name="maxAlpha"/>
+            is 255, and <paramref name="incrementPerLevel"/> is 100,
+            then the text for level-0 (top-level) nodes will be drawn with
+            alpha=55, the text for level-1 nodes will be drawn with alpha=155, and
+            the text for level-2 nodes and below will be drawn with alpha=255.
+            </example>
+            
+            <seealso cref="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.SetFontAlphaRange(System.Int32,System.Int32,System.Int32)"/>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.SetFontAlphaRange(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Sets the range of transparency used for drawing node text.
+            </summary>
+            
+            <param name="minAlpha">
+            Alpha value to use for the level with maximum transparency.  Must be
+            between 0 and 255.
+            </param>
+            
+            <param name="maxAlpha">
+            Alpha value to use for the level with minimum transparency.  Must be
+            between 0 and 255.  Must be &gt;= <paramref name="minAlpha"/>.
+            </param>
+            
+            <param name="incrementPerLevel">
+            Amount that alpha should be incremented from level to level.  Must
+            be &gt; 0.
+            </param>
+            
+            <remarks>
+            To improve text legibility, the <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl"/> varies
+            the transparency of node text.  The text for higher-level nodes is more
+            transparent than the text for lower-level nodes, so the lower-level
+            text shows through the higher-level text.
+            
+            <para>
+            Alpha values range from 0 (transparent) to 255 (opaque).
+            </para>
+            
+            <para>
+            By default, the <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl"/> uses
+            <paramref name="minAlpha"/>=105, <paramref name="maxAlpha"/>=255,
+            and <paramref name="incrementPerLevel"/>=50.
+            </para>
+            
+            </remarks>
+            
+            <example>
+            If <paramref name="minAlpha"/> is 55, <paramref name="maxAlpha"/> is
+            255, and <paramref name="incrementPerLevel"/> is 100,
+            then the text for level-0 (top-level) nodes will be drawn with
+            alpha=55, the text for level-1 nodes will be drawn with alpha=155, and
+            the text for level-2 nodes and below will be drawn with alpha=255.
+            </example>
+            
+            <seealso cref="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.GetFontAlphaRange(System.Int32@,System.Int32@,System.Int32@)"/>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.BeginUpdate">
+            <summary>
+            Disables any redrawing of the treemap.
+            </summary>
+            
+            <remarks>
+            To improve performance, call BeginUpdate before adding <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.Node"/> objects to the treemap.  Call <see cref="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.EndUpdate"/>
+            when you are done.
+            </remarks>
+            
+            <seealso cref="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.EndUpdate"/>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.EndUpdate">
+            <summary>
+            Enables the redrawing of the treemap.
+            </summary>
+            
+            <remarks>
+            To improve performance, call <see cref="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.BeginUpdate"/> before
+            adding <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.Node"/> objects to the treemap.  Call EndUpdate when
+            you are done.
+            </remarks>
+            
+            <seealso cref="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.BeginUpdate"/>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.Draw(System.Drawing.Graphics,System.Drawing.Rectangle)">
+            <summary>
+            Draws the treemap onto a <see cref="T:System.Drawing.Graphics"/> object.
+            </summary>
+            
+            <param name="graphics">
+            <see cref="T:System.Drawing.Graphics"/> object to draw onto.
+            </param>
+            
+            <param name="treemapRectangle">
+            Rectangle to draw into.
+            </param>
+            
+            <remarks>
+            Draws a treemap onto a <see cref="T:System.Drawing.Graphics"/> object.  The selection
+            is not drawn.
+            
+            <para>
+            This method can be used to print the treemap.
+            </para>
+            
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.SelectNode(Microsoft.Research.CommunityTechnologies.Treemap.Node)">
+            <summary>
+            Selects a node.
+            </summary>
+            
+            <param name="node">
+            The <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.Node"/> to select.  Specify null to remove the
+            selection.
+            </param>
+            
+            <remarks>
+            This redraws the specified node's rectangle and text to show it as
+            selected.  If another node was already selected, it gets redrawn as
+            unselected.
+            
+            <para>
+            A node can also be selected by clicking on it with the mouse.  Clicking
+            a node results in the following:
+            
+            <list type="bullet">
+            <item>
+            <description>
+            The specified node is selected and redrawn.
+            </description>
+            </item>
+            <item>
+            <description>
+            The <see cref="E:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.SelectedNodeChanged"/> event is fired.
+            </description>
+            </item>
+            <item>
+            <description>
+            The <see cref="E:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.NodeMouseDown"/> event is fired.
+            </description>
+            </item>
+            </list>
+            
+            </para>
+            
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.Draw(System.Boolean)">
+            <summary>
+            Draw method.
+            </summary>
+            
+            <param name="bRetainSelection">
+            Boolean.  true to reselect the selected node after drawing the treemap.
+            </param>
+            
+            <remarks>
+            Draws a treemap onto the control.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.GetClientMousePosition">
+            <summary>
+            GetClientMousePosition method.
+            </summary>
+            
+            <returns>
+            PointF.  Mouse position in client coordinates.
+            </returns>
+            
+            <remarks>
+            Returns the current mouse position in client coordinates.
+            
+            <para>
+            NOTE: The point returned by this method can be outside the client
+            area.  This can happen if the user is moving the mouse quickly.  The
+            caller should check for this.
+            </para>
+            
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.GetBitmapSizeToDraw">
+            <summary>
+            GetBitmapSizeToDraw method.
+            </summary>
+            
+            <returns>
+            Size.  Size to use for the bitmap.
+            </returns>
+            
+            <remarks>
+            Returns the size to use for the treemap bitmap, taking zoom settings
+            into consideration.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.OnPaint(System.Windows.Forms.PaintEventArgs)">
+            <summary>
+            Handles the Paint event.
+            </summary>
+            
+            <param name="oPaintEventArgs">
+            Standard event arguments.
+            </param>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.ShowToolTip(Microsoft.Research.CommunityTechnologies.Treemap.Node)">
+            <summary>
+            ShowToolTip method.
+            </summary>
+            
+            <param name="oNode">
+            Treemap.Node.  Node to show a tooltip for.
+            </param>
+            
+            <remarks>
+            Shows a tooltip for the specified node.  Do not call this if
+            m_bShowToolTips is false.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.HideToolTip">
+            <summary>
+            HideToolTip method.
+            </summary>
+            
+            <remarks>
+            Hides the tooltip shown by ShowToolTip().
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.GetToolTipRectangle(System.String)">
+            <summary>
+            GetToolTipRectangle method.
+            </summary>
+            
+            <param name="sToolTip">
+            String.  Tooltip text.
+            </param>
+            
+            <remarks>
+            Returns the rectangle that should be used to display the specified
+            tooltip.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.Dispose(System.Boolean)">
+            <summary>
+            Dispose method.
+            </summary>
+            
+            <param name="bDisposing">
+            Boolean.  See Component.Dispose().
+            </param>
+            
+            <remarks>
+            Frees resources.  Call this when you are done with the object.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.picPictureBox_MouseDown(System.Object,System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            picPictureBox_MouseDown method.
+            </summary>
+            
+            <param name="oSource">
+            Object.  Source of the event.
+            </param>
+            
+            <param name="oMouseEventArgs">
+            MouseEventArgs.  Standard mouse event arguments.
+            </param>
+            
+            <remarks>
+            Handles the MouseDown event fired by picPictureBox.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.picPictureBox_MouseUp(System.Object,System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            picPictureBox_MouseUp method.
+            </summary>
+            
+            <param name="oSource">
+            Object.  Source of the event.
+            </param>
+            
+            <param name="oMouseEventArgs">
+            MouseEventArgs.  Standard mouse event arguments.
+            </param>
+            
+            <remarks>
+            Handles the MouseUp event fired by picPictureBox.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.picPictureBox_MouseMove(System.Object,System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            picPictureBox_MouseMove method.
+            </summary>
+            
+            <param name="oSource">
+            Object.  Source of the event.
+            </param>
+            
+            <param name="oMouseEventArgs">
+            MouseEventArgs.  Standard mouse event arguments.
+            </param>
+            
+            <remarks>
+            Handles the MouseMove event fired by picPictureBox.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.picPictureBox_MouseLeave(System.Object,System.EventArgs)">
+            <summary>
+            picPictureBox_MouseLeave method.
+            </summary>
+            
+            <param name="oSource">
+            Object.  Source of the event.
+            </param>
+            
+            <param name="oEventArgs">
+            EventArgs.  Standard event arguments.
+            </param>
+            
+            <remarks>
+            Handles the MouseLeave event fired by picPictureBox.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.picPictureBox_DoubleClick(System.Object,System.EventArgs)">
+            <summary>
+            picPictureBox_DoubleClick method.
+            </summary>
+            
+            <param name="oSource">
+            Object.  Source of the event.
+            </param>
+            
+            <param name="oEventArgs">
+            EventArgs.  Standard event arguments.
+            </param>
+            
+            <remarks>
+            Handles the DoubleClick event fired by picPictureBox.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.oToolTipTracker_ShowToolTip(System.Object,Microsoft.Research.CommunityTechnologies.GraphicsLib.ToolTipTrackerEventArgs)">
+            <summary>
+            oToolTipTracker_ShowToolTip method.
+            </summary>
+            
+            <param name="oSource">
+            Object.  Source of the event.
+            </param>
+            
+            <param name="oToolTipTrackerEventArgs">
+            ToolTipEventArgs.  Event arguments.
+            </param>
+            
+            <remarks>
+            Handles the ShowToolTip event fired by oToolTipTracker.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.oToolTipTracker_HideToolTip(System.Object,Microsoft.Research.CommunityTechnologies.GraphicsLib.ToolTipTrackerEventArgs)">
+            <summary>
+            oToolTipTracker_HideToolTip method.
+            </summary>
+            
+            <param name="oSource">
+            Object.  Source of the event.
+            </param>
+            
+            <param name="oToolTipTrackerEventArgs">
+            ToolTipEventArgs.  Event arguments.
+            </param>
+            
+            <remarks>
+            Handles the HideToolTip event fired by oToolTipTracker.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.TreemapGenerator_RedrawRequired(System.Object,System.EventArgs)">
+            <summary>
+            Handles the RedrawRequired event on the m_oTreemapGenerator object.
+            </summary>
+            
+            <param name="oSender">
+            Standard event arguments.
+            </param>
+            
+            <param name="oEventArgs">
+            Standard event arguments.
+            </param>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.AssertValid">
+            <summary>
+            Displays a message if the object is in an invalid state.
+            </summary>
+            
+            <remarks>
+            This is available in the debug build only.  It checks the object's
+            internal state and calls <see cref="M:System.Diagnostics.Debug.Assert(System.Boolean)"/> if it detects a
+            problem.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.InitializeComponent">
+            <summary>
+            InitializeComponent method.
+            </summary>
+            
+            <remarks>
+            Required method for Designer support - do not modify the contents of
+            this method with the code editor.
+            </remarks>
+        </member>
+        <member name="F:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.m_oTreemapGenerator">
+            Treemap drawing engine.
+        </member>
+        <member name="F:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.m_oBitmap">
+            Bitmap that m_oTreemapGenerator draws on.
+        </member>
+        <member name="F:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.m_bShowToolTips">
+            true if tooltips should be shown.
+        </member>
+        <member name="F:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.m_oToolTipTracker">
+            Helper object for figuring out when to show tooltips.
+        </member>
+        <member name="F:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.m_oLastMouseMovePoint">
+            Most recent point passed into picPictureBox_MouseMove().
+        </member>
+        <member name="F:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.Nodes">
+            <summary>
+            Gets the collection of top-level <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.Node"/> objects.
+            </summary>
+            
+            <value>
+            A <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.Nodes"/>
+            collection of top-level <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.Node"/> objects.
+            </value>
+            
+            <remarks>
+            Items in the collection can be accessed by a zero-based index.  They
+            can also be enumerated.
+            </remarks>
+            
+            <seealso cref="T:Microsoft.Research.CommunityTechnologies.Treemap.Nodes"/>
+            <seealso cref="T:Microsoft.Research.CommunityTechnologies.Treemap.Node"/>
+        </member>
+        <member name="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.NodesXml">
+            <summary>
+            Gets or sets the entire node hierarchy as an XML string.
+            </summary>
+            
+            <value>
+            XML string containing the entire node hierarchy.
+            </value>
+            
+            <remarks>
+            Setting this property is an alternative to repeatedly calling the
+            Nodes.Add method.  This property also serves as a convenient
+            persistence mechanism.  Once you populate the <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.Nodes"/>
+            collection, you can save the contents as an XML string.  Later, you can
+            reload the collection by passing that string to this property.
+            
+            <para>
+            Setting this property causes any existing <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.Node"/> objects
+            to be deleted.
+            </para>
+            
+            <para>
+            This is what the XML returned by this property looks like.  (The values
+            of the SizeMetric, ColorMetric, and ToolTip attributes are omitted here
+            but are present in real XML.)
+            </para>
+            
+            <code>
+            &lt;?xml version="1.0" encoding="utf-16"?&gt;
+            &lt;Nodes EmptySizeMetric="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
+              &lt;Node Text="TopLevel1" SizeMetric="" ColorMetric="" ToolTip=""&gt;
+                &lt;Nodes EmptySizeMetric=""&gt;
+                  &lt;Node Text="Child1" SizeMetric="" ColorMetric="" ToolTip=""&gt;
+                    &lt;Nodes EmptySizeMetric=""&gt;
+                      &lt;Node Text="Grandchild1" SizeMetric="" ColorMetric="" ToolTip=""&gt;
+                        &lt;Nodes EmptySizeMetric=""/&gt;
+                      &lt;/Node&gt;
+                      &lt;Node Text="Grandchild2" SizeMetric="" ColorMetric="" ToolTip=""&gt;
+                        &lt;Nodes EmptySizeMetric=""/&gt;
+                      &lt;/Node&gt;
+                  ...
+                    &lt;/Nodes&gt;
+                  &lt;/Node&gt;
+                  &lt;Node Text="Child2" SizeMetric="" ColorMetric="" ToolTip=""&gt;
+                    &lt;Nodes EmptySizeMetric=""/&gt;
+                  &lt;/Node&gt;
+                ...
+                &lt;/Nodes&gt;
+              &lt;/Node&gt;
+              &lt;Node Text="TopLevel2" SizeMetric="" ColorMetric="" ToolTip=""&gt;
+                &lt;Nodes EmptySizeMetric=""/&gt;
+              &lt;/Node&gt;
+              ...
+            &lt;/Nodes&gt;
+            </code>
+            
+            <para>
+            By default, the <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.Tag"/> property is not serialized.
+            </para>
+            
+            <para>
+            You can customize the way the nodes are serialized to XML by using the
+            <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.NodesXmlAttributeOverrides"/> property.
+            </para>
+            
+            </remarks>
+            
+            <seealso cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.Nodes"/>
+            <seealso cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.NodesXmlAttributeOverrides"/>
+        </member>
+        <member name="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.NodesXmlAttributeOverrides">
+            <summary>
+            Gets or sets an object that customizes how the node hierarchy is
+            serialized to an XML string.
+            </summary>
+            
+            <value>
+            An <see cref="T:System.Xml.Serialization.XmlAttributeOverrides"/> object that customizes XML
+            serialization.  The default value is an object that produces the
+            default serialization documented in <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.NodesXml"/>.
+            </value>
+            
+            <remarks>
+            By default, the node hierarchy is serialized using the schema
+            documented in <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.NodesXml"/>.  You can use the
+            NodesXmlAttributeOverrides property to change the schema.
+            </remarks>
+            
+            <example>
+            For example, the <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.Tag"/> property is not serialized by
+            default, because the object types stored in the tag are not known by
+            the treemap components.  If you use the tag to store custom objects and
+            you want those objects to be serialized, execute the following code
+            before using the <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.NodesXml"/> property.
+            
+            <code>
+            
+            
+            // Create a collection of objects that specify how object properties
+            // are serialized.
+            
+            XmlAttributeOverrides oXmlAttributeOverrides =
+                new XmlAttributeOverrides();
+            
+            // Create a collection of XmlAttribute objects.
+            
+            XmlAttributes oXmlAttributes = new XmlAttributes();
+            
+            // Create an object to control how the Node.Tag property is serialized.
+            
+            XmlElementAttribute oXmlElementAttribute = new XmlElementAttribute();
+            
+            // Specify the type of the Node.Tag objects.
+            
+            oXmlElementAttribute.Type = typeof(MyClass);
+            
+            // Add the XmlElementAttribute object to the XmlAttributes collection.
+            
+            oXmlAttributes.XmlElements.Add(oXmlElementAttribute);
+            
+            // Specify that the Node.Tag property should be serialized using the
+            // information specified in the XmlAttributes collection.
+            
+            oXmlAttributeOverrides.Add(typeof(Node), "Tag", oXmlAttributes);
+            
+            // Tell the treemap to use these overrides for the NodesXml property.
+            
+            oTreemapControl.NodesXmlAttributeOverrides = oXmlAttributeOverrides;
+            
+            </code>
+            
+            </example>
+            
+            <seealso cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.NodesXml"/>
+        </member>
+        <member name="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.PaddingPx">
+            <summary>
+            Gets or sets the padding that is added to the rectangles for top-level
+            nodes.
+            </summary>
+            
+            <value>
+            The padding that is added to the rectangles for top-level nodes, in
+            pixels.  The value must be between
+            <see cref="F:Microsoft.Research.CommunityTechnologies.Treemap.TreemapGenerator.MinPaddingPx"/> and
+            <see cref="F:Microsoft.Research.CommunityTechnologies.Treemap.TreemapGenerator.MaxPaddingPx"/>.  The default value is 5.
+            </value>
+            
+            <remarks>
+            If the <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.PaddingDecrementPerLevelPx"/> property is 0,
+            PaddingPx is the padding that is added to all node rectangles.
+            Otherwise, <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.PaddingDecrementPerLevelPx"/> is subtracted from
+            the padding at each node level.  Decreasing the padding at lower levels
+            can improve the general appearance of the treemap.
+            
+            </remarks>
+            
+            <seealso cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.PaddingDecrementPerLevelPx"/>
+            <seealso cref="F:Microsoft.Research.CommunityTechnologies.Treemap.TreemapGenerator.MinPaddingPx"/>
+            <seealso cref="F:Microsoft.Research.CommunityTechnologies.Treemap.TreemapGenerator.MaxPaddingPx"/>
+        </member>
+        <member name="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.PaddingDecrementPerLevelPx">
+            <summary>
+            Gets or sets the number of pixels that is subtracted from the padding
+            at each node level.
+            </summary>
+            
+            <value>
+            The number of pixels that is subtracted from the rectangle padding
+            at each node level.  The value must be between
+            <see cref="F:Microsoft.Research.CommunityTechnologies.Treemap.TreemapGenerator.MinPaddingDecrementPerLevelPx"/> and
+            <see cref="F:Microsoft.Research.CommunityTechnologies.Treemap.TreemapGenerator.MaxPaddingDecrementPerLevelPx"/>.  The
+            default value is 1.
+            </value>
+            
+            <remarks>
+            The rectangles for top-level nodes are drawn with a padding of
+            <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.PaddingPx"/>.  Set PaddingDecrementPerLevelPx to a positive
+            value to force the padding to decrease at each level.  This can improve
+            the general appearance of the treemap.  A value of 0 causes all
+            nodes to use <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.PaddingPx"/>.
+            
+            <para>
+            If <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.PaddingPx"/> is 5 and PaddingDecrementPerLevelPx is 1,
+            for example, the padding for the top-level, child, and grandchild nodes
+            will be 5, 4, and 3 pixels, respectively.  Padding is never less than
+            <see cref="F:Microsoft.Research.CommunityTechnologies.Treemap.TreemapGenerator.MinPaddingPx"/> pixels.
+            </para>
+            
+            </remarks>
+            
+            <seealso cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.PaddingPx"/>
+            <seealso cref="F:Microsoft.Research.CommunityTechnologies.Treemap.TreemapGenerator.MinPaddingDecrementPerLevelPx"/>
+            <seealso cref="F:Microsoft.Research.CommunityTechnologies.Treemap.TreemapGenerator.MaxPaddingDecrementPerLevelPx"/>
+        </member>
+        <member name="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.PenWidthPx">
+            <summary>
+            Gets or sets the pen width that is used to draw the rectangles for the
+            top-level nodes.
+            </summary>
+            
+            <value>
+            The pen width that is used to draw the rectangles for the top-level
+            nodes, in pixels.  The value must be between
+            <see cref="F:Microsoft.Research.CommunityTechnologies.Treemap.TreemapGenerator.MinPenWidthPx"/> and
+            <see cref="F:Microsoft.Research.CommunityTechnologies.Treemap.TreemapGenerator.MaxPenWidthPx"/>.  The default value is 3.
+            </value>
+            
+            <remarks>
+            If the <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.PenWidthDecrementPerLevelPx"/> property is 0, all
+            rectangles are drawn with a pen width of PenWidthPx pixels.  Otherwise,
+            <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.PenWidthDecrementPerLevelPx"/> is subtracted from
+            the pen width at each node level.  Decreasing the pen width at lower
+            levels can improve the general appearance of the treemap.
+            
+            </remarks>
+            
+            <seealso cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.PenWidthDecrementPerLevelPx"/>
+            <seealso cref="F:Microsoft.Research.CommunityTechnologies.Treemap.TreemapGenerator.MinPenWidthPx"/>
+            <seealso cref="F:Microsoft.Research.CommunityTechnologies.Treemap.TreemapGenerator.MaxPenWidthPx"/>
+        </member>
+        <member name="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.PenWidthDecrementPerLevelPx">
+            <summary>
+            Gets or sets the number of pixels that is subtracted from the pen
+            width at each node level.
+            </summary>
+            
+            <value>
+            The number of pixels that is subtracted from the pen width at each
+            node level.  The value must be between
+            <see cref="F:Microsoft.Research.CommunityTechnologies.Treemap.TreemapGenerator.MinPenWidthDecrementPerLevelPx"/>
+            and <see cref="F:Microsoft.Research.CommunityTechnologies.Treemap.TreemapGenerator.MaxPenWidthDecrementPerLevelPx"/>.
+            The default value is 1.
+            
+            </value>
+            
+            <remarks>
+            
+            The rectangles for top-level nodes are drawn with a pen width of
+            <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.PenWidthPx"/> pixels.  Set PenWidthDecrementPerLevelPx to
+            a positive value to force the pen width to decrease at each level.
+            This can improve the general appearance of the treemap.  A value of 0
+            causes all nodes to use <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.PenWidthPx"/>.
+            
+            <para>
+            If <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.PenWidthPx"/> is 4 and PenWidthDecrementPerLevelPx is
+            1, for example, the pen width for the top-level nodes will be 4, the
+            width for the child nodes will be 3, the width for the grandchildren
+            will be 2, and so on.  The pen width is never less than 1 pixel.
+            </para>
+            
+            </remarks>
+            
+            <seealso cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.PenWidthPx"/>
+            <seealso cref="F:Microsoft.Research.CommunityTechnologies.Treemap.TreemapGenerator.MinPenWidthDecrementPerLevelPx"/>
+            <seealso cref="F:Microsoft.Research.CommunityTechnologies.Treemap.TreemapGenerator.MaxPenWidthDecrementPerLevelPx"/>
+        </member>
+        <member name="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.BackColor">
+            <summary>
+            Gets or sets the treemap's background color.
+            </summary>
+            
+            <value>
+            The treemap's background color, as a <see cref="T:System.Drawing.Color"/>.
+            </value>
+            
+            <remarks>
+            The background color is used to paint areas of the treemap that aren't
+            covered by rectangles.  The default value is SystemColors.Window.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.BorderColor">
+            <summary>
+            Gets or sets the color of rectangle borders.
+            </summary>
+            
+            <value>
+            The color of the rectangle borders, as a <see cref="T:System.Drawing.Color"/>.
+            </value>
+            
+            <remarks>
+            The default border color is SystemColors.WindowFrame.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.MinColor">
+            <summary>
+            Gets or sets the maximum negative fill color.
+            </summary>
+            
+            <value>
+            The fill color for nodes with a
+            <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.ColorMetric"/> value of <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.MinColorMetric"/>
+            or less, as a <see cref="T:System.Drawing.Color"/>.
+            </value>
+            
+            <remarks>
+            See <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.ColorMetric"/> for details on how fill colors for
+            node rectangles are determined.
+            </remarks>
+            
+            <seealso cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.MinColorMetric"/>
+            <seealso cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.ColorMetric"/>
+            <seealso cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.DiscreteNegativeColors"/>
+        </member>
+        <member name="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.MaxColor">
+            <summary>
+            Gets or sets the maximum positive fill color.
+            </summary>
+            
+            <value>
+            The fill color for nodes with a
+            <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.ColorMetric"/> value of <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.MaxColorMetric"/>
+            or greater, as a <see cref="T:System.Drawing.Color"/>.
+            </value>
+            
+            <remarks>
+            See <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.ColorMetric"/> for details on how fill colors for
+            node rectangles are determined.
+            </remarks>
+            
+            <seealso cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.MaxColorMetric"/>
+            <seealso cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.ColorMetric"/>
+            <seealso cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.DiscretePositiveColors"/>
+        </member>
+        <member name="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.MinColorMetric">
+            <summary>
+            Gets or sets the <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.ColorMetric"/> value to map to 
+            <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.MinColor"/>.
+            </summary>
+            
+            <value>
+            The <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.ColorMetric"/> value to map to
+            <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.MinColor"/>.
+            </value>
+            
+            <remarks>
+            See <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.ColorMetric"/> for details on how fill colors for
+            node rectangles are determined.
+            </remarks>
+            
+            <seealso cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.MinColor"/>
+            <seealso cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.ColorMetric"/>
+            <seealso cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.DiscreteNegativeColors"/>
+        </member>
+        <member name="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.MaxColorMetric">
+            <summary>
+            Gets or sets the <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.ColorMetric"/> value to map to 
+            <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.MaxColor"/>.
+            </summary>
+            
+            <value>
+            The <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.ColorMetric"/> value to map to
+            <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.MaxColor"/>.
+            </value>
+            
+            <remarks>
+            See <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.ColorMetric"/> for details on how fill colors for
+            node rectangles are determined.
+            </remarks>
+            
+            <seealso cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.MaxColor"/>
+            <seealso cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.ColorMetric"/>
+            <seealso cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.DiscretePositiveColors"/>
+        </member>
+        <member name="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.DiscreteNegativeColors">
+            <summary>
+            Gets or sets the number of discrete fill colors to use in the negative
+            color range.
+            </summary>
+            
+            <value>
+            The number of discrete fill colors to use in the range between white
+            and <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.MinColor"/>.  Must be between
+            <see cref="F:Microsoft.Research.CommunityTechnologies.Treemap.TreemapGenerator.MinDiscreteColors"/> and
+            <see cref="F:Microsoft.Research.CommunityTechnologies.Treemap.TreemapGenerator.MaxDiscreteColors"/>.  The default value
+            is 20.
+            </value>
+            
+            <remarks>
+            
+            When filling rectangles for nodes that have a negative
+            <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.ColorMetric"/> value, the
+            <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl"/> splits the negative color range, which
+            is white to <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.MinColor"/>, into a set of discrete colors.
+            Nodes with a <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.ColorMetric"/> value of 0 are filled with
+            white, nodes with a <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.ColorMetric"/> value of
+            <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.MinColorMetric"/> or less are filled with
+            <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.MinColor"/>, and nodes with a
+            <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.ColorMetric"/> somewhere between are mapped to the
+            nearest discrete color within the negative color range.
+            
+            <para>
+            The default value provides sufficient color granularity for most
+            applications.
+            </para>
+            
+            </remarks>
+            
+            <seealso cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.MinColor"/>
+            <seealso cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.MinColorMetric"/>
+            <seealso cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.ColorMetric"/>
+        </member>
+        <member name="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.DiscretePositiveColors">
+            <summary>
+            Gets or sets the number of discrete fill colors to use in the positive
+            color range.
+            </summary>
+            
+            <value>
+            The number of discrete fill colors to use in the range between white
+            and <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.MaxColor"/>.  Must be between
+            <see cref="F:Microsoft.Research.CommunityTechnologies.Treemap.TreemapGenerator.MinDiscreteColors"/> and
+            <see cref="F:Microsoft.Research.CommunityTechnologies.Treemap.TreemapGenerator.MaxDiscreteColors"/>.  The default value
+            is 20.
+            </value>
+            
+            <remarks>
+            
+            When filling rectangles for nodes that have a positive
+            <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.ColorMetric"/> value, the
+            <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl"/> splits the positive color range, which
+            is white to <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.MaxColor"/>, into a set of discrete colors.
+            Nodes with a <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.ColorMetric"/> value of 0 are filled with
+            white, nodes with a <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.ColorMetric"/> value of
+            <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.MaxColorMetric"/> or greater are filled with
+            <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.MaxColor"/>, and nodes with a
+            <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.ColorMetric"/> somewhere between are mapped to the
+            nearest discrete color within the positive color range.
+            
+            <para>
+            The default value provides sufficient color granularity for most
+            applications.
+            </para>
+            
+            </remarks>
+            
+            <seealso cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.MaxColor"/>
+            <seealso cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.MaxColorMetric"/>
+            <seealso cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.ColorMetric"/>
+        </member>
+        <member name="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.FontFamily">
+            <summary>
+            Gets or sets the font family to use for drawing node text.
+            </summary>
+            
+            <value>
+            The name of the font family to use for drawing node text.  The default
+            value is Arial.
+            </value>
+        </member>
+        <member name="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.FontSolidColor">
+            <summary>
+            Gets or sets the color to use for node text.
+            </summary>
+            
+            <value>
+            The color to use for node text, as a <see cref="T:System.Drawing.Color"/>.
+            </value>
+            
+            <remarks>
+            This must be a solid color, which means its alpha component must be
+            255.  Text can be drawn using transparent colors; see
+            <see cref="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.SetFontAlphaRange(System.Int32,System.Int32,System.Int32)"/> for details.
+            </remarks>
+            
+            <seealso cref="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.SetFontAlphaRange(System.Int32,System.Int32,System.Int32)"/>
+        </member>
+        <member name="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.NodeLevelsWithText">
+            <summary>
+            Gets or sets the node levels to show text for.
+            </summary>
+            
+            <value>
+            A <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.NodeLevelsWithText"/> enumeration that indicates which node levels
+            should include text.  The default value is All.
+            </value>
+            
+            <seealso cref="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.SetNodeLevelsWithTextRange(System.Int32,System.Int32)"/>
+        </member>
+        <member name="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.SelectedNode">
+            <summary>
+            Gets the selected <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.Node"/>, if there is one.
+            </summary>
+            
+            <value>
+            The selected <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.Node"/>, or null if there is none.
+            </value>
+        </member>
+        <member name="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.ShowToolTips">
+            <summary>
+            Gets or sets a value indicating whether tooltips should be shown.
+            </summary>
+            
+            <value>
+            true to show tooltips.  The default value is true.
+            </value>
+            
+            <remarks>
+            If ShowToolTips is true and a node has a non-empty
+            <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.Node.ToolTip"/> property, a tooltip is shown when the user
+            hovers the mouse over the node's rectangle .
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.Bitmap">
+            <summary>
+            Gets the control's internal <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.Bitmap"/>.
+            </summary>
+            
+            <value>
+            The control's internal <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.Bitmap"/> object.  May be null.
+            </value>
+            
+            <remarks>
+            The <see cref="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.Draw(System.Drawing.Graphics,System.Drawing.Rectangle)"/> method draws a treemap onto an internal
+            <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.Bitmap"/> object, then transfers the <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.Bitmap"/>
+            onto the control's surface.  This property allows the caller to save
+            the <see cref="P:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.Bitmap"/> to a file or print it.  The returned object
+            is strictly read-only; it should not be modified in any way.  If
+            <see cref="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.Draw(System.Drawing.Graphics,System.Drawing.Rectangle)"/> hasn't been called yet, the returned value is null.
+            </remarks>
+        </member>
+        <member name="E:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.NodeMouseDown">
+            <summary>
+            Occurs when the mouse pointer is over the rectangle of a
+            <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.Node"/> object and a mouse button is pressed.
+            </summary>
+            
+            <remarks>
+            See <see cref="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.SelectNode(Microsoft.Research.CommunityTechnologies.Treemap.Node)"/> for details on what happens when a mouse
+            button is pressed.
+            </remarks>
+            
+            <seealso cref="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.SelectNode(Microsoft.Research.CommunityTechnologies.Treemap.Node)"/>
+        </member>
+        <member name="E:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.NodeMouseUp">
+            <summary>
+            Occurs when the mouse pointer is over the rectangle of a
+            <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.Node"/> object and a mouse button is released.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.NodeMouseHover">
+            <summary>
+            Occurs when the mouse pointer hovers over the rectangle of a
+            <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.Node"/> object.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.NodeDoubleClick">
+            <summary>
+            Occurs when the rectangle of a <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.Node"/> object is
+            double-clicked.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.SelectedNodeChanged">
+            <summary>
+            Occurs when the selected node changes.
+            </summary>
+            
+            <remarks>
+            This event is fired when <see cref="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.SelectNode(Microsoft.Research.CommunityTechnologies.Treemap.Node)"/> is called and when a
+            mouse button is pressed while the mouse pointer is over the rectangle
+            of a <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.Node"/> object.
+            
+            <para>
+            See <see cref="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.SelectNode(Microsoft.Research.CommunityTechnologies.Treemap.Node)"/> for details on what happens when a mouse
+            button is pressed.
+            </para>
+            
+            </remarks>
+            
+            <seealso cref="M:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.SelectNode(Microsoft.Research.CommunityTechnologies.Treemap.Node)"/>
+        </member>
+        <member name="T:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.NodeEventHandler">
+            <summary>
+            Represents the method that will handle a <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl"/> event that involves a
+            <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.Node"/> object.
+            </summary>
+            
+            <param name="sender">
+            The <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl"/> that fired the event.
+            </param>
+            
+            <param name="nodeEventArgs">
+            Provides information about the <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.Node"/> object involved in
+            the event.
+            </param>
+        </member>
+        <member name="T:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl.NodeMouseEventHandler">
+            <summary>
+            Represents the method that will handle a <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl"/> event that involves the mouse and a
+            <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.Node"/> object.
+            </summary>
+            
+            <param name="sender">
+            The <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.TreemapControl"/> that fired the event.
+            </param>
+            
+            <param name="nodeMouseEventArgs">
+            Provides information about the mouse and the <see cref="T:Microsoft.Research.CommunityTechnologies.Treemap.Node"/>
+            object involved in the event.
+            </param>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,121 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{C28A22D7-9772-4EE5-834B-666B3F5C27D5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Reflector.CodeMetrics</RootNamespace>
+    <AssemblyName>Reflector.CodeMetrics</AssemblyName>
+    <OutputPath>..\..\Build\</OutputPath>
+    <BaseIntermediateOutputPath>..\..\Build\Intermediate\$(AssemblyName)\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Reflector">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Build\Reflector.exe</HintPath>
+    </Reference>
+    <Reference Include="TreemapControl">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\External\TreeMap\TreemapControl.dll</HintPath>
+    </Reference>
+    <Reference Include="TreemapGenerator">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\External\TreeMap\TreemapGenerator.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\External\CommandBar\CommandBar.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\External\CommandBar\CommandBarButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\External\CommandBar\CommandBarButtonBase.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\External\CommandBar\CommandBarCheckBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\External\CommandBar\CommandBarCollection.cs" />
+    <Compile Include="..\External\CommandBar\CommandBarComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\External\CommandBar\CommandBarContextMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\External\CommandBar\CommandBarControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\External\CommandBar\CommandBarItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\External\CommandBar\CommandBarItemCollection.cs" />
+    <Compile Include="..\External\CommandBar\CommandBarManager.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\External\CommandBar\CommandBarMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\External\CommandBar\CommandBarSeparator.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\External\CommandBar\CommandBarStyle.cs" />
+    <Compile Include="..\External\CommandBar\CommandBarTypeConverter.cs" />
+    <Compile Include="..\External\CommandBar\NativeMethods.cs" />
+    <Compile Include="..\External\CommandBar\TextGraphics.cs" />
+    <Compile Include="CodeMetricWindow.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CodeMetricEventHandler.cs" />
+    <Compile Include="CodeMetricPackage.cs" />
+    <Compile Include="CodeMetric.cs" />
+    <Compile Include="CodeMetricCollection.cs" />
+    <Compile Include="CodeMetricManager.cs" />
+    <Compile Include="ComputationProgressEventHandler.cs" />
+    <Compile Include="CodeMetricLevel.cs" />
+    <Compile Include="CommandLineProcessor.cs" />
+    <Compile Include="CyclomaticComplexityAlgorithm.cs" />
+    <Compile Include="DataTable.cs" />
+    <Compile Include="MethodCodeMetric.cs" />
+    <Compile Include="TypeCodeMetric.cs" />
+    <Compile Include="CodeMetricView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ModuleCodeMetric.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Helper.cs" />
+    <Compile Include="CommandBarImages.cs" />
+    <Compile Include="BrowserResource.cs" />
+    <Compile Include="IconHelper.cs" />
+    <EmbeddedResource Include="CommandBar16.png" />
+    <EmbeddedResource Include="Browser16.png" />
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+  </ItemGroup>
+  <Import Project="..\ReflectorAddIns.targets" />
+</Project>
